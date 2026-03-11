@@ -1,0 +1,58 @@
+#!/bin/sh
+# Stub for termux-job-scheduler
+# Stores jobs in STUB_JOBS_DIR (default /tmp/syncoid-stub-jobs)
+JOBS_DIR="${STUB_JOBS_DIR:-/tmp/syncoid-stub-jobs}"
+mkdir -p "$JOBS_DIR"
+
+case "$1" in
+    --list)
+        if [ -z "$(ls -A "$JOBS_DIR" 2>/dev/null)" ]; then
+            echo "[]"
+        else
+            echo "["
+            first=true
+            for f in "$JOBS_DIR"/*.json; do
+                [ -f "$f" ] || continue
+                if [ "$first" = true ]; then
+                    first=false
+                else
+                    echo ","
+                fi
+                cat "$f"
+            done
+            echo "]"
+        fi
+        ;;
+    --cancel)
+        shift
+        JOB_ID="0"
+        while [ $# -gt 0 ]; do
+            case "$1" in
+                --job-id) JOB_ID="$2"; shift 2 ;;
+                *) shift ;;
+            esac
+        done
+        rm -f "$JOBS_DIR/$JOB_ID.json"
+        ;;
+    *)
+        # Register job - parse args
+        JOB_ID="0"
+        PERIOD_MS="0"
+        SCRIPT=""
+        NETWORK=""
+        CHARGING="false"
+        while [ $# -gt 0 ]; do
+            case "$1" in
+                --job-id) JOB_ID="$2"; shift 2 ;;
+                --period-ms) PERIOD_MS="$2"; shift 2 ;;
+                --script) SCRIPT="$2"; shift 2 ;;
+                --network) NETWORK="$2"; shift 2 ;;
+                --charging) CHARGING="$2"; shift 2 ;;
+                *) shift ;;
+            esac
+        done
+        cat > "$JOBS_DIR/$JOB_ID.json" <<EOF
+{"id": $JOB_ID, "periodMs": $PERIOD_MS, "script": "$SCRIPT", "network": "$NETWORK", "charging": $CHARGING}
+EOF
+        ;;
+esac

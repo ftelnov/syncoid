@@ -1,0 +1,21 @@
+#!/bin/sh
+# Stub for termux-battery-status
+# Control via env: STUB_BATTERY_PCT (default 80), STUB_BATTERY_PLUGGED (default UNPLUGGED)
+PCT="${STUB_BATTERY_PCT:-80}"
+PLUGGED="${STUB_BATTERY_PLUGGED:-UNPLUGGED}"
+
+if [ "$PLUGGED" = "UNPLUGGED" ]; then
+    STATUS="DISCHARGING"
+else
+    STATUS="CHARGING"
+fi
+
+cat <<EOF
+{
+  "health": "GOOD",
+  "percentage": $PCT,
+  "plugged": "$PLUGGED",
+  "status": "$STATUS",
+  "temperature": 25.0
+}
+EOF

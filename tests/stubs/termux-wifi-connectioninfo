@@ -1,0 +1,36 @@
+#!/bin/sh
+# Stub for termux-wifi-connectioninfo
+# Control via env: STUB_WIFI_CONNECTED (default true), STUB_WIFI_SSID (default TestNetwork)
+CONNECTED="${STUB_WIFI_CONNECTED:-true}"
+SSID="${STUB_WIFI_SSID:-TestNetwork}"
+
+if [ "$CONNECTED" = "true" ]; then
+    cat <<EOF
+{
+  "bssid": "00:11:22:33:44:55",
+  "frequency_mhz": 5180,
+  "ip": "192.168.1.100",
+  "link_speed_mbps": 866,
+  "mac_address": "AA:BB:CC:DD:EE:FF",
+  "network_id": 0,
+  "rssi": -45,
+  "ssid": "$SSID",
+  "ssid_hidden": false,
+  "supplicant_state": "COMPLETED"
+}
+EOF
+else
+    cat <<EOF
+{
+  "bssid": "02:00:00:00:00:00",
+  "frequency_mhz": -1,
+  "ip": "0.0.0.0",
+  "link_speed_mbps": -1,
+  "mac_address": "AA:BB:CC:DD:EE:FF",
+  "network_id": -1,
+  "rssi": -127,
+  "ssid_hidden": false,
+  "supplicant_state": "DISCONNECTED"
+}
+EOF
+fi

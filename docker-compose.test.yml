@@ -1,0 +1,39 @@
+services:
+  syncthing:
+    image: syncthing/syncthing:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - syncthing-data:/var/syncthing/data
+      - ./tests/fixtures/syncthing-config.xml:/seed-config.xml:ro
+    # Copy seed config so Syncthing can rewrite it (format upgrade), then start
+    entrypoint: ["/bin/sh", "-c", "mkdir -p /var/syncthing/config /data/sync && touch /data/sync/.stfolder && cp /seed-config.xml /var/syncthing/config/config.xml && exec /bin/syncthing serve --no-browser --no-upgrade --home=/var/syncthing/config"]
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "-H", "X-API-Key: test-api-key-for-syncoid", "http://127.0.0.1:8384/rest/system/ping"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
+
+  test:
+    build:
+      context: .
+      dockerfile: tests/Dockerfile
+    depends_on:
+      syncthing:
+        condition: service_healthy
+    environment:
+      - SYNCOID_CONFIG_DIR=/tmp/syncoid-test-config
+      - SYNCTHING_GUI_ADDR=syncthing:8384
+      - SYNCTHING_API_KEY=test-api-key-for-syncoid
+      # Termux stub control
+      - STUB_BATTERY_PCT=80
+      - STUB_BATTERY_PLUGGED=UNPLUGGED
+      - STUB_WIFI_CONNECTED=true
+      - STUB_NET_TYPE=wifi
+      - STUB_NOTIFICATION_LOG=/tmp/notifications.log
+      - STUB_JOBS_DIR=/tmp/syncoid-stub-jobs
+
+volumes:
+  syncthing-data:

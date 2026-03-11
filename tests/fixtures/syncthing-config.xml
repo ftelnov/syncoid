@@ -1,0 +1,50 @@
+<configuration version="37">
+    <folder id="test-folder" label="Test Folder" path="/data/sync" type="sendreceive"
+            rescanIntervalS="3600" fsWatcherEnabled="false" fsWatcherDelayS="10"
+            ignorePerms="false" autoNormalize="true">
+        <filesystemType>basic</filesystemType>
+        <minDiskFree unit="%">1</minDiskFree>
+        <versioning></versioning>
+        <copiers>0</copiers>
+        <pullerMaxPendingKiB>0</pullerMaxPendingKiB>
+        <hashers>0</hashers>
+        <order>random</order>
+        <ignoreDelete>false</ignoreDelete>
+        <scanProgressIntervalS>0</scanProgressIntervalS>
+        <pullerPauseS>0</pullerPauseS>
+        <maxConflicts>10</maxConflicts>
+        <disableSparseFiles>false</disableSparseFiles>
+        <disableTempIndexes>false</disableTempIndexes>
+        <paused>false</paused>
+        <weakHashThresholdPct>25</weakHashThresholdPct>
+        <markerName>.stfolder</markerName>
+        <copyOwnershipFromParent>false</copyOwnershipFromParent>
+        <modTimeWindowS>0</modTimeWindowS>
+        <maxConcurrentWrites>2</maxConcurrentWrites>
+        <disableFsync>false</disableFsync>
+        <blockPullOrder>standard</blockPullOrder>
+        <copyRangeMethod>standard</copyRangeMethod>
+        <caseSensitiveFS>false</caseSensitiveFS>
+        <junctionsAsDirs>false</junctionsAsDirs>
+        <syncOwnership>false</syncOwnership>
+        <sendOwnership>false</sendOwnership>
+        <syncXattrs>false</syncXattrs>
+        <sendXattrs>false</sendXattrs>
+    </folder>
+    <gui enabled="true" tls="false" debugging="false" sendBasicAuthPrompt="false">
+        <address>0.0.0.0:8384</address>
+        <apikey>test-api-key-for-syncoid</apikey>
+        <theme>default</theme>
+    </gui>
+    <options>
+        <listenAddress>default</listenAddress>
+        <globalAnnounceEnabled>false</globalAnnounceEnabled>
+        <localAnnounceEnabled>false</localAnnounceEnabled>
+        <relaysEnabled>false</relaysEnabled>
+        <startBrowser>false</startBrowser>
+        <natEnabled>false</natEnabled>
+        <urAccepted>-1</urAccepted>
+        <crashReportingEnabled>false</crashReportingEnabled>
+        <setLowPriority>false</setLowPriority>
+    </options>
+</configuration>

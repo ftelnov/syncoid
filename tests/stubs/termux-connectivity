@@ -1,0 +1,8 @@
+#!/bin/sh
+# Stub for termux-connectivity
+# Control via env: STUB_NET_TYPE (default wifi)
+NET_TYPE="${STUB_NET_TYPE:-wifi}"
+
+cat <<EOF
+[{"type": "$NET_TYPE"}]
+EOF
