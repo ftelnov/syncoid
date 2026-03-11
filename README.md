@@ -50,7 +50,7 @@ pkg install inotify-tools
 One-liner:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ftelnov/syncoid/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ftelnov/syncoid/master/install.sh | bash
 ```
 
 The installer auto-detects and installs missing Termux packages (`python`, `git`, `syncthing`, `termux-api`, `inotify-tools`) — no need to install them manually beforehand.
