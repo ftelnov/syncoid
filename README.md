@@ -62,7 +62,117 @@ pip install git+https://github.com/ftelnov/syncoid.git
 syncoid configure
 ```
 
-The installer auto-detects Syncthing's API key from `~/.config/syncthing/config.xml` (or `$STCONFDIR`/`$STHOMEDIR`). If Syncthing hasn't run yet, start it once first (`syncthing` in Termux, then Ctrl-C after it initializes).
+## First-time Syncthing setup
+
+If you've never used Syncthing before, follow these steps to get it running on your phone and connected to another device (PC, laptop, server, another phone).
+
+### 1. Initialize Syncthing on your phone
+
+```bash
+syncthing
+```
+
+Wait until you see `GUI and API listening on 127.0.0.1:8384` in the output, then press **Ctrl-C**. This creates the config and generates your device ID and API key. Syncoid will auto-detect the API key from here.
+
+### 2. Get your phone's Device ID
+
+```bash
+syncthing --device-id
+```
+
+Copy this string — you'll need it on the other device. It looks like `XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX`.
+
+### 3. Connect the two devices
+
+**On your PC** (Syncthing web UI at 127.0.0.1:8384):
+
+1. Go to **Actions** (top right) > **Show ID** — copy this ID
+2. Click **Add Remote Device**
+3. Paste your **phone's Device ID** (from step 2)
+4. Give it a name (e.g. "Phone")
+5. Click **Save**
+
+**On your phone**, start Syncthing temporarily with the GUI exposed:
+
+```bash
+syncthing --gui-address=0.0.0.0:8384
+```
+
+Find your phone's IP (`ifconfig wlan0` in another Termux session), then open `http://PHONE_IP:8384` from your PC browser.
+
+In the phone's web UI:
+1. Click **Add Remote Device**
+2. Paste your **PC's Device ID**
+3. Click **Save**
+
+Both devices should show as "Connected" within a few seconds (if on the same network).
+
+### 4. Create a shared folder
+
+Make sure Termux has storage permission first:
+
+```bash
+termux-setup-storage
+```
+
+**On your PC** (web UI at 127.0.0.1:8384):
+
+1. Click **Add Folder**
+2. Set **Folder Label** (e.g. "Photos") and **Folder Path** (e.g. `~/Sync/Photos`)
+3. Go to the **Sharing** tab, check your phone device
+4. Click **Save**
+
+**On your phone** (web UI still open from step 4):
+
+A prompt appears asking to accept the shared folder. Click **Add**, set the local path, and save.
+
+If the prompt doesn't appear, add the folder manually:
+1. Click **Add Folder**
+2. Use the **same Folder ID** as on the PC (visible in the PC's folder settings)
+3. Set the path to a local phone directory
+4. Go to **Sharing**, check the PC device
+5. Click **Save**
+
+Common phone paths:
+
+| Content | Path |
+|---|---|
+| Camera photos | `/storage/emulated/0/DCIM` |
+| Documents | `/storage/emulated/0/Documents` |
+| Downloads | `/storage/emulated/0/Download` |
+| Custom folder | `/data/data/com.termux/files/home/sync` |
+
+When done, stop Syncthing on the phone (Ctrl-C in Termux). Syncoid will manage it from here.
+
+### 5. Install Syncoid and test
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ftelnov/syncoid/master/install.sh | bash
+```
+
+Then test:
+
+```bash
+syncoid now
+```
+
+Syncoid starts Syncthing, scans all folders, waits for sync to complete, then shuts it down. If both devices are on the same network, files should appear on the other side within seconds.
+
+If this is your first sync with a large folder, increase the sync window in `~/.config/syncoid/config.json`:
+
+```json
+{ "max_window_min": 30 }
+```
+
+Then run `syncoid now` again.
+
+### 6. Start watching
+
+```bash
+syncoid watch
+```
+
+From now on, any file you save, photo you take, or document you edit gets synced automatically — without Syncthing running 24/7.
 
 ## Usage
 
