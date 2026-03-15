@@ -122,25 +122,16 @@ termux-setup-storage
 3. Go to the **Sharing** tab, check your phone device
 4. Click **Save**
 
-**On your phone** (web UI still open from step 4):
+**On your phone** (web UI still open from step 3):
 
-A prompt appears asking to accept the shared folder. Click **Add**, set the local path, and save.
+A prompt appears asking to accept the shared folder. Click **Add** and save — it defaults to `/storage/emulated/0/Sync/<folder-name>` (Syncoid sets this automatically via `defaultFolderPath` in Syncthing's config).
 
 If the prompt doesn't appear, add the folder manually:
 1. Click **Add Folder**
 2. Use the **same Folder ID** as on the PC (visible in the PC's folder settings)
-3. Set the path to a local phone directory
+3. The path auto-fills to `/storage/emulated/0/Sync/` — adjust if needed
 4. Go to **Sharing**, check the PC device
 5. Click **Save**
-
-Common phone paths:
-
-| Content | Path |
-|---|---|
-| Camera photos | `/storage/emulated/0/DCIM` |
-| Documents | `/storage/emulated/0/Documents` |
-| Downloads | `/storage/emulated/0/Download` |
-| Custom folder | `/data/data/com.termux/files/home/sync` |
 
 When done, stop Syncthing on the phone (Ctrl-C in Termux). Syncoid will manage it from here.
 
@@ -279,7 +270,8 @@ Stored at `~/.config/syncoid/config.json`:
   "notify_on_success": false,
   "watch_debounce_sec": 5.0,
   "log_retention_days": 7,
-  "ondemand_max_wait_min": 5
+  "ondemand_max_wait_min": 5,
+  "default_folder_path": "/storage/emulated/0/Sync"
 }
 ```
 
@@ -297,6 +289,7 @@ Stored at `~/.config/syncoid/config.json`:
 | `watch_debounce_sec` | 5.0 | Seconds to wait after last file change before syncing |
 | `log_retention_days` | 7 | Auto-delete logs older than this |
 | `ondemand_max_wait_min` | 5 | Max wait for on-demand sync |
+| `default_folder_path` | /storage/emulated/0/Sync | Where accepted folders land on the phone |
 | `gui_addr` | 127.0.0.1:8384 | Syncthing API address |
 
 Override config directory:

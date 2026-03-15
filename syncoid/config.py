@@ -23,6 +23,7 @@ class Config:
     log_retention_days: int = 7
     ondemand_max_wait_min: int = 5
     watch_debounce_sec: float = 5.0
+    default_folder_path: str = "/storage/emulated/0/Sync"
     api_key: Optional[str] = None
 
     def __post_init__(self):
@@ -56,7 +57,15 @@ class Config:
             val = os.environ.get(env)
             if val:
                 return Path(val).expanduser() / "config.xml"
-        return Path.home() / ".config/syncthing/config.xml"
+        # Syncthing v2+ uses XDG state dir; older versions use XDG config dir
+        candidates = [
+            Path.home() / ".local/state/syncthing/config.xml",
+            Path.home() / ".config/syncthing/config.xml",
+        ]
+        for c in candidates:
+            if c.exists():
+                return c
+        return candidates[0]  # default to new location
 
     @classmethod
     def _detect_api_key(cls) -> Optional[str]:
@@ -71,6 +80,33 @@ class Config:
                 pass
         return None
     
+    @classmethod
+    def apply_syncthing_defaults(cls, config: "Config") -> None:
+        """Set defaultFolderPath in Syncthing's config.xml so accepted folders land in the right place."""
+        st_config = cls._syncthing_config_xml()
+        if not st_config.exists():
+            return
+        try:
+            tree = ET.parse(st_config)
+            root = tree.getroot()
+            options = root.find("options")
+            if options is None:
+                options = ET.SubElement(root, "options")
+
+            dfp = options.find("defaultFolderPath")
+            if dfp is None:
+                dfp = ET.SubElement(options, "defaultFolderPath")
+
+            if dfp.text != config.default_folder_path:
+                dfp.text = config.default_folder_path
+                tree.write(str(st_config), xml_declaration=True, encoding="unicode")
+                try:
+                    Path(config.default_folder_path).mkdir(parents=True, exist_ok=True)
+                except OSError:
+                    pass
+        except Exception:
+            pass
+
     @classmethod
     def load(cls) -> "Config":
         config = cls()
@@ -109,6 +145,7 @@ class Config:
             "log_retention_days": self.log_retention_days,
             "ondemand_max_wait_min": self.ondemand_max_wait_min,
             "watch_debounce_sec": self.watch_debounce_sec,
+            "default_folder_path": self.default_folder_path,
         }
         if self.api_key:
             data["api_key"] = self.api_key

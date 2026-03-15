@@ -242,8 +242,9 @@ def cmd_configure(args):
         return 1
     
     config.save()
+    Config.apply_syncthing_defaults(config)
     log(f"Configuration saved to {Config.config_file()}")
-    
+
     if register_job(config):
         log(f"Scheduled job registered (every {config.period_hours}h)")
     else:
